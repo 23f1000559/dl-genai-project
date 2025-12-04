@@ -20,8 +20,20 @@ if st.button("Predict"):
     if text.strip():
         try:
             result = classifier(text)
+            label = result["label"]
+            score = result["score"]
+            label_map = {
+                "LABEL_0": "Anger",
+                "LABEL_1": "Fear",
+                "LABEL_2": "Joy",
+                "LABEL_3": "Sadness",
+                "LABEL_4": "Surprise",
+                
+            }
+            display_label = label_map.get(label, f"Unknown Label ({label})")
+            confidence = f"{score * 100:.2f}%"
             st.subheader("Prediction:")
-            st.write(result)
+            st.write(f"The text expresses **{display_label}** with **{confidence}** confidence.")
         except Exception as e:
             st.error(f"Error during inference: {e}")
     else:
