@@ -1,32 +1,28 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
+from transformers import pipeline
 
-MODEL_NAME = "m7k-run/dl-gen-ai-roberta" 
+MODEL_NAME = "m7k-run/dl-gen-ai-roberta"
 
 @st.cache_resource
-def load_model():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-    return tokenizer, model
+def get_pipeline():
+    
+    classifier = pipeline("text-classification", model=MODEL_NAME, tokenizer=MODEL_NAME)
+    return classifier
 
-tokenizer, model = load_model()
+classifier = get_pipeline()
 
 st.title("RoBERTa Text Classifier")
-st.write("Enter your text.")
+st.write("Enter your text below:")
 
 text = st.text_area("Input text:")
 
 if st.button("Predict"):
     if text.strip():
-        inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
-        with torch.no_grad():
-            outputs = model(**inputs)
-
-        probs = torch.softmax(outputs.logits, dim=1).tolist()[0]
-
-        st.subheader("Predictions:")
-        for i, p in enumerate(probs):
-            st.write(f"Class {i}: {p:.4f}")
+        try:
+            result = classifier(text)
+            st.subheader("Prediction:")
+            st.write(result)
+        except Exception as e:
+            st.error(f"Error during inference: {e}")
     else:
         st.warning("Please enter some text.")
