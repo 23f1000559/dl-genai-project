@@ -18,7 +18,7 @@ text = st.text_area("Input text:")
 
 if st.button("Predict"):
     if text.strip():
-       try:
+        try:
             raw_result = classifier(text)[0] 
             
             label = raw_result["label"]
@@ -36,7 +36,7 @@ if st.button("Predict"):
             confidence = f"{score * 100:.2f}%"
 
             st.subheader("Prediction:")
-            
+
             if display_label in ["Joy", "Surprise"]:
                 st.success(f"The text expresses **{display_label}** with **{confidence}** confidence.")
             elif display_label in ["Anger", "Sadness", "Fear"]:
