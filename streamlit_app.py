@@ -18,22 +18,32 @@ text = st.text_area("Input text:")
 
 if st.button("Predict"):
     if text.strip():
-        try:
-            result = classifier(text)
-            label = result["label"]
-            score = result["score"]
+       try:
+            raw_result = classifier(text)[0] 
+            
+            label = raw_result["label"]
+            score = raw_result["score"]
+            
             label_map = {
                 "LABEL_0": "Anger",
                 "LABEL_1": "Fear",
                 "LABEL_2": "Joy",
                 "LABEL_3": "Sadness",
                 "LABEL_4": "Surprise",
-                
             }
+            
             display_label = label_map.get(label, f"Unknown Label ({label})")
             confidence = f"{score * 100:.2f}%"
+
             st.subheader("Prediction:")
-            st.write(f"The text expresses **{display_label}** with **{confidence}** confidence.")
+            
+            if display_label in ["Joy", "Surprise"]:
+                st.success(f"The text expresses **{display_label}** with **{confidence}** confidence.")
+            elif display_label in ["Anger", "Sadness", "Fear"]:
+                st.error(f"The text expresses **{display_label}** with **{confidence}** confidence.")
+            else:
+                st.info(f"The text expresses **{display_label}** with **{confidence}** confidence.")
+                
         except Exception as e:
             st.error(f"Error during inference: {e}")
     else:
